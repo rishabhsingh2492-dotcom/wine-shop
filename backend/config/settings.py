@@ -83,3 +83,8 @@ STORAGES = {
 }
 CORS_ALLOWED_ORIGINS = [o for o in os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",") if o]
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+
+# ---- staticfiles for collectstatic ----
+if 'django.contrib.staticfiles' not in INSTALLED_APPS:
+    INSTALLED_APPS.append('django.contrib.staticfiles')
+STATIC_URL = '/static/'
