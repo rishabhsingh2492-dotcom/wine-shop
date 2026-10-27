@@ -4,7 +4,7 @@ services:
     runtime: python
     rootDir: backend
     plan: free
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate && python manage.py import_wine_data
     startCommand: gunicorn config.wsgi:application
     envVars:
       - key: PYTHON_VERSION
@@ -22,3 +22,4 @@ services:
 databases:
   - name: wineiq-db
     plan: free
+
