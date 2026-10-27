@@ -53,3 +53,33 @@ if _url:
         'HOST': _u.hostname,
         'PORT': _u.port or 5432,
         'OPTIONS': {'sslmode': 'require'}}}
+
+# --- Production settings (Render) ---
+import os
+SECRET_KEY = os.getenv('SECRET_KEY', 'dev-only-key')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',') if h.strip()]
+CORS_ALLOWED_ORIGINS = [o.strip() for o in os.getenv('CORS_ALLOWED_ORIGINS', '').split(',') if o.strip()]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+if 'corsheaders' not in INSTALLED_APPS:
+    INSTALLED_APPS.append('corsheaders')
+if 'whitenoise.middleware.WhiteNoiseMiddleware' not in MIDDLEWARE:
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+if 'corsheaders.middleware.CorsMiddleware' not in MIDDLEWARE:
+    MIDDLEWARE.insert(2, 'corsheaders.middleware.CorsMiddleware')
+
+# ---- Production settings ----
+import os, dj_database_url
+SECRET_KEY = os.environ.get("SECRET_KEY", SECRET_KEY)
+DEBUG = os.environ.get("DEBUG", "False") == "True"
+ALLOWED_HOSTS = [".onrender.com", "localhost", "127.0.0.1"]
+if os.environ.get("DATABASE_URL"):
+    DATABASES = {"default": dj_database_url.config(conn_max_age=600)}
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
+CORS_ALLOWED_ORIGINS = [o for o in os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",") if o]
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
